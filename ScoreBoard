@@ -1,0 +1,55 @@
+package Model.Scenes;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author user
+ */
+public class ScoreBoard {
+    private double score;
+    private String highscore;
+    private long start, stop;
+    
+    public void start(){
+        this.score=0;
+        this.start= System.currentTimeMillis();
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader("highScore.txt"));
+            String highscore = reader.readLine();
+        } 
+        catch (FileNotFoundException ex) {
+            ex.getMessage();
+        } 
+        catch (IOException ex) {
+            ex.getMessage();
+        }
+    }
+    public void update(){
+        this.stop = System.currentTimeMillis();
+        this.score += (stop-start)*10;
+        if(Double.parseDouble(highscore)< score){
+            highscore = score+"";
+            try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("highScore.txt"));
+            writer.write(highscore);
+            writer.newLine();
+            writer.flush();
+            writer.close();
+            } 
+            catch (IOException ex) {
+                ex.getMessage();
+            }
+        }
+        
+    }
+            
+}
