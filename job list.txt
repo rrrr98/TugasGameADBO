@@ -1,0 +1,3 @@
+Kevin & Cahyadi OOP dan model
+Febrian & Cindia Character control & logic
+Joseph Game UI & logic
