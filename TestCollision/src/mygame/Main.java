@@ -185,5 +185,8 @@ public class Main extends SimpleApplication
                 //System.exit(1);
             }
         }
+        else {
+            
+        }
     }
 }
