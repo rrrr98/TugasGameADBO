@@ -2,6 +2,7 @@ package mygame;
 
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.Animation;
 import com.jme3.animation.LoopMode;
 import com.jme3.animation.SkeletonControl;
@@ -9,9 +10,13 @@ import com.jme3.animation.SpatialTrack;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
@@ -28,7 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TestSpatialAnim extends SimpleApplication {
+public class TestSpatialAnim extends SimpleApplication implements AnimEventListener{
 
     //test variable
     private AnimChannel channel;
@@ -41,7 +46,7 @@ public class TestSpatialAnim extends SimpleApplication {
     private Spatial modelCharacter;
     private CharacterControl player;
     private BulletAppState bulletAppState;
-    private boolean left, right, jump;
+    private boolean left, right;
 
     //test gravity var
     private int verticalSpeed = 0;
@@ -80,6 +85,7 @@ public class TestSpatialAnim extends SimpleApplication {
             Geometry geom = new Geometry("box", box);
             Geometry leftG = new Geometry("box", box);
             Geometry rightG = new Geometry("box", box);
+            
             geom.setMaterial(m);
             leftG.setMaterial(m);
             rightG.setMaterial(m);
@@ -136,21 +142,34 @@ public class TestSpatialAnim extends SimpleApplication {
         //run animation
         control.createChannel().setAnim("anim");
 
-        //load model
+
         loadModel();
         createInput();
+        //initKeys();
     }
 
     public void simpleUpdate(float tpf) {
         //System.out.println(modelCharacter.getLocalTranslation().getY());
 
-        if (jump) {
-            // lompat dan jatuh pakai animasi yg ada .-. yg ini tidak ada
-            jump = false;
-        }
     }
 
-    private void loadModel() {
+   private void loadModel() {
+        modelCharacter = (Node) assetManager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
+        modelCharacter.setLocalScale(0.1f);
+        modelCharacter.setLocalTranslation(cam.getLocation().add(-1.2f, 0, 0));
+        modelCharacter.getLocalRotation().fromAngleAxis(-1.5708f, Vector3f.UNIT_Y);
+        //tambah control
+       control = modelCharacter.getControl(AnimControl.class);
+        control.addListener(this);
+        channel = control.createChannel();
+        channel.setAnim("RunBase");
+        modelCharacter.addControl(new RigidBodyControl(0));
+        modelCharacter.getControl(RigidBodyControl.class).getCollisionShape().setScale(new Vector3f(2, 2, 2));
+        bulletAppState.getPhysicsSpace().add(modelCharacter);
+        bulletAppState.getPhysicsSpace().add(modelCharacter);  
+        rootNode.attachChild(modelCharacter);
+    }
+   /* private void loadModel() {
         Material m = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         TextureKey k = new TextureKey("Models/Oto/Oto.jpg", false);
         m.setTexture("ColorMap", assetManager.loadTexture(k));
@@ -160,6 +179,8 @@ public class TestSpatialAnim extends SimpleApplication {
         //modelCharacter.setLocalScale(0.1f);
         //modelCharacter.setLocalTranslation(-SIZE / 2, 0, -SIZE / 2);
         modelCharacter.setLocalTranslation(cam.getLocation().add(-1.2f, 0, 0));
+        //modelCharacter.setLocalTranslation(new Vector3f(50f,0f,0f));
+         //modelCharacter.getLocalRotation().fromAngleAxis(1.5708f, Vector3f.UNIT_Y);
         modelCharacter.rotate(0, -1.5f, 0);
         modelCharacter.setLocalScale(0.05f);
         control = modelCharacter.getControl(AnimControl.class);
@@ -174,7 +195,7 @@ public class TestSpatialAnim extends SimpleApplication {
         skeletonControl.setHardwareSkinningPreferred(hwSkinningEnable);
         skControls.add(skeletonControl);
         rootNode.attachChild(modelCharacter);
-    }
+    }*/
 
     private AnalogListener analogListener = new AnalogListener() {
 
@@ -188,43 +209,69 @@ public class TestSpatialAnim extends SimpleApplication {
                 left = true;
                 modelCharacter.move(0, 0, 2 * tpf);
             }
-            if (name.equals("MoveUp")) {
-                jump = true;
-                System.out.println("masuk");
+            if (name.equals("JumpStart")) {
+                jump(tpf);
+                //System.out.println("masuk");
             }
             right = false;
             left = false;
         }
     };
 
-    //test gravity
-    private void fall() {
-        this.verticalSpeed = this.verticalSpeed + gravity;
-        if (this.verticalSpeed > terminalVelocity) {
-            this.verticalSpeed = terminalVelocity;
-        }
-        this.verticalPosition = this.verticalPosition - this.verticalSpeed;
-        if (this.verticalPosition < 0) {
-            this.verticalPosition = 0;
-        }
-    }
 
     // test jump
-    private void jump() {
-        this.verticalSpeed = this.verticalSpeed + 1;
-        if (this.verticalSpeed > terminalVelocity) {
-            this.verticalSpeed = terminalVelocity;
-        }
-        this.verticalPosition = this.verticalPosition + this.verticalSpeed;
+    public void jump(float tpf){
+        //cara wajar
+        /*Vector3f aim=modelCharacter.getLocalTranslation().add(new Vector3f(0f,3f*tpf,0f));
+        modelCharacter.move(aim);
+        while(modelCharacter.getLocalTranslation().y!=0){
+            channel.setAnim("JumpLoop");
+            aim.subtract(new Vector3f(0f,0.5f,0f));
+            modelCharacter.move(aim.multLocal(speed + tpf));
+        }*/
+        //cara naif
+        modelCharacter.move(0,3f*tpf,0);
+        channel.setAnim("JumpLoop");
+        //modelCharacter.move(0,-20f*tpf,0);   
+        channel.setLoopMode(LoopMode.DontLoop);
+        channel.setAnim("RunBase");
     }
 
     private void createInput() {
         inputManager.addMapping("MoveRight", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("MoveLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("MoveUp", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("JumpStart", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addListener(actionListener, "JumpStart");
 
         inputManager.addListener(analogListener, new String[]{
-            "MoveRight", "MoveLeft", "MoveUp"
+            "MoveRight", "MoveLeft", "JumpStart"
         });
     }
+    
+    
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
+        if (animName.equals("JumpStart")) {
+            channel.setAnim("JumpEnd");
+            channel.setSpeed(1f);
+            channel.setAnim("RunBase");
+        }
+
+    }
+
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
+        // unused
+    }
+
+    private ActionListener actionListener = new ActionListener() {
+
+        public void onAction(String name, boolean keyPressed, float tpf) {
+            if (name.equals("JumpStart") && !keyPressed) {
+                if (!channel.getAnimationName().equals("JumpStart")) {
+                    channel.setAnim("JumpStart", 0.50f);
+                    channel.setLoopMode(LoopMode.Loop);
+                }
+            }
+    
+    }
+    };
 }
