@@ -10,21 +10,12 @@ import com.jme3.animation.SpatialTrack;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
-<<<<<<< Updated upstream
-import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.font.BitmapText;
-import com.jme3.input.KeyInput;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
-=======
 import com.jme3.collision.CollisionResults;
 import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
->>>>>>> Stashed changes
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
@@ -40,11 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-<<<<<<< Updated upstream
-public class TestSpatialAnim extends SimpleApplication implements AnimEventListener{
-=======
 public class TestSpatialAnim extends SimpleApplication implements AnimEventListener {
->>>>>>> Stashed changes
 
     //test variable
     private AnimChannel channel;
@@ -57,17 +44,12 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
     private Spatial modelCharacter;
     private CharacterControl player;
     private BulletAppState bulletAppState;
-<<<<<<< Updated upstream
-    private boolean left, right;
-
-=======
     private boolean left, right, jump;
     private float maxMove = 0.7f;
     private float now = 0;
     private float leftMax = -0.7f, rightMax = 0.7f;
     private float gridPlacement = 0f;
     private boolean jumpTrigger = false;
->>>>>>> Stashed changes
     //test gravity var
     private float verticalMax = 0.7f;
     private float verticalPosition = 0;
@@ -117,11 +99,7 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
             Geometry geom = new Geometry("box", box);
             Geometry leftG = new Geometry("box", box);
             Geometry rightG = new Geometry("box", box);
-<<<<<<< Updated upstream
-            
-=======
             Geometry obsG = new Geometry("obstacle", obstacle);
->>>>>>> Stashed changes
             geom.setMaterial(m);
             leftG.setMaterial(m);
             rightG.setMaterial(m);
@@ -190,13 +168,7 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
         rootNode.attachChild(model);
 
         //run animation
-<<<<<<< Updated upstream
-        control.createChannel().setAnim("anim");
-
-
-=======
         //control.createChannel().setAnim("anim");
->>>>>>> Stashed changes
         loadModel();
         createInput();
         //initKeys();
@@ -257,11 +229,6 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
                 }
             }
 
-<<<<<<< Updated upstream
-    }
-
-   private void loadModel() {
-=======
             // collision
             CollisionResults results = new CollisionResults();
             for (int i = 0; i < listOfObstacle.size(); i++) {
@@ -298,35 +265,23 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
     }
 
     private void loadModel() {
->>>>>>> Stashed changes
         modelCharacter = (Node) assetManager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
         modelCharacter.setLocalScale(0.1f);
         modelCharacter.setLocalTranslation(cam.getLocation().add(-1.2f, 0, 0));
         modelCharacter.getLocalRotation().fromAngleAxis(-1.5708f, Vector3f.UNIT_Y);
         //tambah control
-<<<<<<< Updated upstream
-       control = modelCharacter.getControl(AnimControl.class);
-=======
         control = modelCharacter.getControl(AnimControl.class);
->>>>>>> Stashed changes
         control.addListener(this);
         channel = control.createChannel();
         channel.setAnim("RunBase");
         modelCharacter.addControl(new RigidBodyControl(0));
         modelCharacter.getControl(RigidBodyControl.class).getCollisionShape().setScale(new Vector3f(2, 2, 2));
         bulletAppState.getPhysicsSpace().add(modelCharacter);
-<<<<<<< Updated upstream
-        bulletAppState.getPhysicsSpace().add(modelCharacter);  
-        rootNode.attachChild(modelCharacter);
-    }
-   /* private void loadModel() {
-=======
         rootNode.attachChild(modelCharacter);
     }
 
 
     /* private void loadModel() {
->>>>>>> Stashed changes
         Material m = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         TextureKey k = new TextureKey("Models/Oto/Oto.jpg", false);
         m.setTexture("ColorMap", assetManager.loadTexture(k));
@@ -353,8 +308,6 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
         skControls.add(skeletonControl);
         rootNode.attachChild(modelCharacter);
     }*/
-<<<<<<< Updated upstream
-=======
     // test jump
     public void jump(float tpf) {
         //cara wajar
@@ -372,7 +325,6 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
         channel.setLoopMode(LoopMode.DontLoop);
 
     }
->>>>>>> Stashed changes
 
     public void fall(float tpf) {
         modelCharacter.move(0, -tpf, 0);
@@ -394,84 +346,14 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
 //        });
     }
 
-<<<<<<< Updated upstream
-            if (name.equals("MoveLeft")) {
-                left = true;
-                modelCharacter.move(0, 0, 2 * tpf);
-            }
-            if (name.equals("JumpStart")) {
-                jump(tpf);
-                //System.out.println("masuk");
-            }
-            right = false;
-            left = false;
-=======
     public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
         if (animName.equals("JumpStart")) {
             channel.setAnim("JumpEnd");
             channel.setSpeed(1f);
             //System.out.println("masuk sini");
             channel.setAnim("RunBase");
->>>>>>> Stashed changes
         }
 
-<<<<<<< Updated upstream
-
-    // test jump
-    public void jump(float tpf){
-        //cara wajar
-        /*Vector3f aim=modelCharacter.getLocalTranslation().add(new Vector3f(0f,3f*tpf,0f));
-        modelCharacter.move(aim);
-        while(modelCharacter.getLocalTranslation().y!=0){
-            channel.setAnim("JumpLoop");
-            aim.subtract(new Vector3f(0f,0.5f,0f));
-            modelCharacter.move(aim.multLocal(speed + tpf));
-        }*/
-        //cara naif
-        modelCharacter.move(0,3f*tpf,0);
-        channel.setAnim("JumpLoop");
-        //modelCharacter.move(0,-20f*tpf,0);   
-        channel.setLoopMode(LoopMode.DontLoop);
-        channel.setAnim("RunBase");
-    }
-
-    private void createInput() {
-        inputManager.addMapping("MoveRight", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addMapping("MoveLeft", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("JumpStart", new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addListener(actionListener, "JumpStart");
-
-        inputManager.addListener(analogListener, new String[]{
-            "MoveRight", "MoveLeft", "JumpStart"
-        });
-    }
-    
-    
-    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName) {
-        if (animName.equals("JumpStart")) {
-            channel.setAnim("JumpEnd");
-            channel.setSpeed(1f);
-            channel.setAnim("RunBase");
-        }
-
-    }
-
-    public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
-        // unused
-    }
-
-    private ActionListener actionListener = new ActionListener() {
-
-        public void onAction(String name, boolean keyPressed, float tpf) {
-            if (name.equals("JumpStart") && !keyPressed) {
-                if (!channel.getAnimationName().equals("JumpStart")) {
-                    channel.setAnim("JumpStart", 0.50f);
-                    channel.setLoopMode(LoopMode.Loop);
-                }
-            }
-    
-    }
-=======
     }
 
     public void onAnimChange(AnimControl control, AnimChannel channel, String animName) {
@@ -500,6 +382,5 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
             }
 
         }
->>>>>>> Stashed changes
     };
 }
