@@ -5,7 +5,6 @@ import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
 import com.jme3.animation.Animation;
 import com.jme3.animation.LoopMode;
-import com.jme3.animation.SkeletonControl;
 import com.jme3.animation.SpatialTrack;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bounding.BoundingVolume;
@@ -13,7 +12,6 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResults;
-import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -27,20 +25,15 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.system.AppSettings;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class TestSpatialAnim extends SimpleApplication implements AnimEventListener {
 
     //test variable
     private AnimChannel channel;
     private AnimControl control;
-    private String[] animNames = {"Dodge", "Walk", "pull", "push"};
-    private final static int SIZE = 10;
-    private boolean hwSkinningEnable = true;
-    private List<SkeletonControl> skControls = new ArrayList<SkeletonControl>();
-    private BitmapText hwsText;
     private Spatial modelCharacter;
     private CharacterControl player;
     private BulletAppState bulletAppState;
@@ -54,12 +47,12 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
     private float verticalMax = 0.7f;
     private float verticalPosition = 0;
     private boolean jumpStatus = false;
-    private int gravity = 10;
-    private int terminalVelocity = 300;
-    private RigidBodyControl controlObs;
     private Node model;
     private Animation spatialAnimation;
 
+    //test var
+    private boolean jumpButtonStatus = false;
+    //end test
     private boolean IS_ALIVE = true;
     private HashMap<String, Animation> animations;
 
@@ -69,6 +62,12 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
     //end test variable
     public static void main(String[] args) {
         TestSpatialAnim app = new TestSpatialAnim();
+        AppSettings settings = new AppSettings(true);
+        settings.setResolution(1024, 768);
+
+        app.setSettings(settings);
+        app.setShowSettings(false);
+
         app.start();
     }
 
@@ -204,6 +203,9 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
                 jumpStatus = true;
                 jumpTrigger = true;
                 jump = false;
+                jumpButtonStatus = true;
+                channel.setAnim("JumpStart");
+                channel.setLoopMode(LoopMode.DontLoop);
             }
             if (jumpTrigger && jumpStatus) {
                 //if (!channel.getAnimationName().equals("JumpStart")) {
@@ -226,6 +228,7 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
                     channel.setLoopMode(LoopMode.Loop);
                     //System.out.println("masuk sini");
                     jumpTrigger = false;
+                    jumpButtonStatus = false;
                 }
             }
 
@@ -237,14 +240,14 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
 
                 if (results.size() > 0) {
                     System.out.println("COLLIDE!!!!");
-                    IS_ALIVE = false;
+                    //IS_ALIVE = false;
                 } else {
                     //System.out.println("NOT COLLIDING");
                 }
             }
         } else {
-            model.removeControl(control);
-            control.clearChannels();
+//            model.removeControl(control);
+//            control.clearChannels();
         }
 
 //        BoundingVolume bv
@@ -274,40 +277,13 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
         control.addListener(this);
         channel = control.createChannel();
         channel.setAnim("RunBase");
-        modelCharacter.addControl(new RigidBodyControl(0));
+        modelCharacter.addControl(new RigidBodyControl(0f));
         modelCharacter.getControl(RigidBodyControl.class).getCollisionShape().setScale(new Vector3f(2, 2, 2));
         bulletAppState.getPhysicsSpace().add(modelCharacter);
         rootNode.attachChild(modelCharacter);
     }
 
 
-    /* private void loadModel() {
-        Material m = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        TextureKey k = new TextureKey("Models/Oto/Oto.jpg", false);
-        m.setTexture("ColorMap", assetManager.loadTexture(k));
-        modelCharacter = (Spatial) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-        //setting a different material
-        modelCharacter.setMaterial(m.clone());
-        //modelCharacter.setLocalScale(0.1f);
-        //modelCharacter.setLocalTranslation(-SIZE / 2, 0, -SIZE / 2);
-        modelCharacter.setLocalTranslation(cam.getLocation().add(-1.2f, 0, 0));
-        //modelCharacter.setLocalTranslation(new Vector3f(50f,0f,0f));
-         //modelCharacter.getLocalRotation().fromAngleAxis(1.5708f, Vector3f.UNIT_Y);
-        modelCharacter.rotate(0, -1.5f, 0);
-        modelCharacter.setLocalScale(0.05f);
-        control = modelCharacter.getControl(AnimControl.class);
-
-        channel = control.createChannel();
-        channel.setAnim(animNames[1]);
-        channel.setLoopMode(LoopMode.Loop);
-        SkeletonControl skeletonControl = modelCharacter.getControl(SkeletonControl.class);
-
-        //This is a workaround the issue. this call will make the SkeletonControl gather the targets again.
-        //skeletonControl.setSpatial(model);
-        skeletonControl.setHardwareSkinningPreferred(hwSkinningEnable);
-        skControls.add(skeletonControl);
-        rootNode.attachChild(modelCharacter);
-    }*/
     // test jump
     public void jump(float tpf) {
         //cara wajar
@@ -337,7 +313,7 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
         inputManager.addMapping("MoveRight", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("MoveLeft", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("JumpStart", new KeyTrigger(KeyInput.KEY_SPACE));
-     
+
         inputManager.addListener(actionListener, "JumpStart");
         inputManager.addListener(actionListener, "MoveLeft");
         inputManager.addListener(actionListener, "MoveRight");
@@ -363,13 +339,13 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
     private ActionListener actionListener = new ActionListener() {
 
         public void onAction(String name, boolean keyPressed, float tpf) {
-            if (name.equals("JumpStart") && !keyPressed) {
+            if (!jumpButtonStatus && name.equals("JumpStart") && !keyPressed) {
                 System.out.println("masuk jump");
                 jump = true;
             }
             if (name.equals("MoveRight") && !keyPressed) {
                 System.out.println("masuk right");
-                if (gridPlacement < 0.69f) {
+                if (gridPlacement < 0.68f) {
                     right = true;
                 }
             }
