@@ -22,10 +22,12 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
+import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.system.AppSettings;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,17 +45,17 @@ public class Main extends SimpleApplication implements AnimEventListener {
     private boolean left, right, jump;
     private final float maxMove = 0.9f;
     private float now = 0;
-    private final float leftMax = -0.7f;
-    private final float rightMax = 0.7f;
+    private float leftMax = -0.7f;
+    private float rightMax = 0.7f;
     private float gridPlacement = 0f;
     private boolean jumpTrigger = false;
     //test gravity var
-    private final float verticalMax = 0.7f;
+    private float verticalMax = 0.7f;
     private float verticalPosition = 0;
     private boolean jumpStatus = false;
     private Node model;
     private Animation spatialAnimation;
-    private final float[] arrayRand = {-1.8f, 0f, 1.8f};
+    private float[] arrayRand = {-1.8f, 0f, 1.8f};
     private float factor = 0f;
     private boolean mark = true;
     //test var
@@ -67,20 +69,22 @@ public class Main extends SimpleApplication implements AnimEventListener {
     //test collision
     private final ArrayList<Geometry> listOfObstacle = new ArrayList<>();
     private AbstractAppState abstractAppState;
-    private  float airMomentum = 0.07f;
+    private float airMomentum = 0.07f;
     private float nowAirMomentum = 0;
-    private final float gravity = 0.025f;
+    private float gravity = 0.025f;
     private float nowGravity = 0.05f;
     private float nowMove = 0;
+
     //end test variable
     public static void main(String[] args) {
         Main app = new Main();
         AppSettings settings = new AppSettings(true);
         settings.setResolution(1024, 768);
+        settings.setFrameRate(350);
 //        settings.setFullscreen(true);
         app.setSettings(settings);
         app.setShowSettings(false);
-
+        app.setDisplayStatView(false);
         app.start();
     }
 
@@ -100,7 +104,16 @@ public class Main extends SimpleApplication implements AnimEventListener {
         viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
         DirectionalLight dl = new DirectionalLight();
         dl.setDirection(Vector3f.UNIT_XYZ.negate());
-        rootNode.addLight(dl);
+//        rootNode.addLight(dl);
+
+        //shadow
+        FilterPostProcessor processor = new FilterPostProcessor(assetManager);
+        DirectionalLightShadowFilter filter = new DirectionalLightShadowFilter(assetManager, 2048, 1);
+        filter.setLight(dl);
+        processor.addFilter(filter);
+        viewPort.addProcessor(processor);
+        //end shadow
+
         //disable movement mouse
         flyCam.setEnabled(false);
         // Create model
@@ -132,7 +145,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
             childModel.attachChild(geom);
             left.attachChild(leftG);
             right.attachChild(rightG);
-            if (i % 5 == 2) {
+            if (i % 5 == 3) {
                 obs.attachChild(obsG);
                 model.attachChild(obs);
                 listOfObstacle.add(obsG);
@@ -146,7 +159,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
 
         //animation parameters
         float animTime = 2;
-        int fps = 100;
+        int fps = 60;
         float totalXLength = 10;
 
         //calculating frames
@@ -248,8 +261,9 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 System.out.println("masuk jump");
             } else if (jumpTrigger && !jumpStatus) {
                 float move = (nowGravity) * tpf;
+                System.out.println(tpf);
                 if (verticalPosition - move >= 0) {
-                    jump(-move);
+                    jump(move * -1);
                     nowGravity += gravity;
                     verticalPosition -= move;
                 } else {
@@ -282,17 +296,17 @@ public class Main extends SimpleApplication implements AnimEventListener {
         } else {
             model.removeControl(control);
             control.clearChannels();
-            System.out.println("die");
-            model.removeControl(control);
+            //System.out.println("die");
             spatialAnimation.removeTrack(spatialTrack);
         }
     }
 
     private void resetState() {
-        IS_ALIVE = true;
+        abstractAppState.setEnabled(true);
         model.addControl(control);
         channel = control.createChannel();
         channel.setAnim("anim");
+        spatialAnimation.addTrack(spatialTrack);
     }
 
     private void loadModel() {
@@ -317,7 +331,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
     public void jump(float tpf) {
         //cara naif
         modelCharacter.move(0, tpf, 0);
-        channel.setAnim("JumpLoop");   
+        channel.setAnim("JumpLoop");
         channel.setLoopMode(LoopMode.DontLoop);
 
     }
@@ -326,7 +340,6 @@ public class Main extends SimpleApplication implements AnimEventListener {
         inputManager.addMapping("MoveRight", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("MoveLeft", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("JumpStart", new KeyTrigger(KeyInput.KEY_SPACE));
-
         inputManager.addListener(actionListener, "JumpStart");
         inputManager.addListener(actionListener, "MoveLeft");
         inputManager.addListener(actionListener, "MoveRight");
