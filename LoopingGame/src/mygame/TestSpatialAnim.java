@@ -7,6 +7,7 @@ import com.jme3.animation.Animation;
 import com.jme3.animation.LoopMode;
 import com.jme3.animation.SpatialTrack;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.AbstractAppState;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.CharacterControl;
@@ -33,6 +34,7 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
 
     //test variable
     private AnimChannel channel;
+    private AnimChannel channel2;
     private AnimControl control;
     private Spatial modelCharacter;
     private CharacterControl player;
@@ -52,12 +54,14 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
 
     //test var
     private boolean jumpButtonStatus = false;
+    private SpatialTrack spatialTrack;
     //end test
     private boolean IS_ALIVE = true;
     private HashMap<String, Animation> animations;
 
     //test collision
     private ArrayList<Geometry> listOfObstacle = new ArrayList<>();
+    private AbstractAppState abstractAppState;
 
     //end test variable
     public static void main(String[] args) {
@@ -73,6 +77,9 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
 
     @Override
     public void simpleInitApp() {
+        abstractAppState = new AbstractAppState();
+        abstractAppState.setEnabled(true);
+        stateManager.attach(abstractAppState);
         //bullet
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
@@ -109,11 +116,13 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
             Node right = new Node("right");
             Node obs = new Node("obs");
 
+            
+            
             childModel.setLocalTranslation(2 * i, 0, 0);
             left.setLocalTranslation(2 * i, 0, -2);
             right.setLocalTranslation(2 * i, 0, 2);
             obs.setLocalTranslation(2 * i, 1.5f, 0);
-
+            
             childModel.attachChild(geom);
             left.attachChild(leftG);
             right.attachChild(rightG);
@@ -126,7 +135,8 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
             model.attachChild(childModel);
             model.attachChild(left);
             model.attachChild(right);
-
+            
+            
         }
 
         //animation parameters
@@ -150,7 +160,7 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
             rotations[i] = Quaternion.IDENTITY;
             scales[i] = Vector3f.UNIT_XYZ;
         }
-        SpatialTrack spatialTrack = new SpatialTrack(times, translations, rotations, scales);
+        spatialTrack = new SpatialTrack(times, translations, rotations, scales);
 
         //creating the animation
         spatialAnimation = new Animation("anim", animTime);
@@ -175,7 +185,7 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
 
     public void simpleUpdate(float tpf) {
         //System.out.println(modelCharacter.getLocalTranslation().getY());
-        if (IS_ALIVE) {
+        if (abstractAppState.isEnabled()) {
             if (left) {
                 float move = 2 * tpf;
                 if (now + move <= maxMove) {
@@ -225,6 +235,7 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
                     verticalPosition -= move;
                 } else {
                     channel.setAnim("RunBase");
+                    channel2.setAnim("RunTop");
                     channel.setLoopMode(LoopMode.Loop);
                     //System.out.println("masuk sini");
                     jumpTrigger = false;
@@ -239,15 +250,21 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
                 modelCharacter.collideWith(bv, results);
 
                 if (results.size() > 0) {
-                    System.out.println("COLLIDE!!!!");
-                    //IS_ALIVE = false;
+                    //System.out.println("COLLIDE!!!!");
+                    abstractAppState.setEnabled(false);
+                    System.out.println(abstractAppState.isEnabled());
+//IS_ALIVE = false;
                 } else {
                     //System.out.println("NOT COLLIDING");
                 }
             }
         } else {
-//            model.removeControl(control);
-//            control.clearChannels();
+            model.removeControl(control);
+            control.clearChannels();
+//            rootNode.detachChild(modelCharacter);
+            System.out.println("die");
+            model.removeControl(control);
+            spatialAnimation.removeTrack(spatialTrack);
         }
 
 //        BoundingVolume bv
@@ -276,13 +293,14 @@ public class TestSpatialAnim extends SimpleApplication implements AnimEventListe
         control = modelCharacter.getControl(AnimControl.class);
         control.addListener(this);
         channel = control.createChannel();
+        channel2 = control.createChannel();
         channel.setAnim("RunBase");
+        channel2.setAnim("RunTop");
         modelCharacter.addControl(new RigidBodyControl(0f));
         modelCharacter.getControl(RigidBodyControl.class).getCollisionShape().setScale(new Vector3f(2, 2, 2));
         bulletAppState.getPhysicsSpace().add(modelCharacter);
         rootNode.attachChild(modelCharacter);
     }
-
 
     // test jump
     public void jump(float tpf) {
