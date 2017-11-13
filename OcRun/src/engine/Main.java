@@ -10,6 +10,8 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResults;
@@ -49,6 +51,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
     private float rightMax = 0.7f;
     private float gridPlacement = 0f;
     private boolean jumpTrigger = false;
+    private double gameSpeed = 1;
     //test gravity var
     private float verticalMax = 0.7f;
     private float verticalPosition = 0;
@@ -80,7 +83,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
         Main app = new Main();
         AppSettings settings = new AppSettings(true);
         settings.setResolution(1024, 768);
-        settings.setFrameRate(100);
+        settings.setFrameRate(60);
 //        settings.setFullscreen(true);
         app.setSettings(settings);
         app.setShowSettings(false);
@@ -198,6 +201,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
     }
 
     public void simpleUpdate(float tpf) {
+        tpf*=gameSpeed;
         Random r = new Random();
         int x = r.nextInt(3);
         factor = 1.8f;
@@ -218,7 +222,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 mark = true;
             }
             if (left) {
-                float move = 2 * tpf;
+                float move = 2 * 0.015f;
                 if (now + move <= maxMove) {
                     modelCharacter.move(0, 0, move);
                     now += move;
@@ -230,7 +234,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 }
             } else if (right) {
 
-                float move = 2 * tpf;
+                float move = 2 * 0.015f;
                 if (now + move <= maxMove) {
                     modelCharacter.move(0, 0, -move);
                     now += move;
@@ -249,7 +253,8 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 channel.setLoopMode(LoopMode.DontLoop);
             }
             if (jumpTrigger && jumpStatus) {
-                float move = gravity * 1.0048f - nowGravity * tpf * 2.553f;
+//                float move = gravity * 1.0048f - nowGravity * tpf * 2.553f;
+                float move = (0.507f-nowGravity)*0.015f*6;
                 System.out.println(tpf);
                 if (move > 0) {
                     jump(move);
@@ -261,10 +266,10 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 }
                 System.out.println("masuk jump");
             } else if (jumpTrigger && !jumpStatus) {
-                float move = (nowGravity) * tpf;
+                float move = (nowGravity) * 0.015f*6f;
                 System.out.println(tpf);
                 if (verticalPosition - move >= 0) {
-                    jump(move * -1);
+                    jump(-move);
                     nowGravity += gravity;
                     verticalPosition -= move;
                 } else {
@@ -283,17 +288,14 @@ public class Main extends SimpleApplication implements AnimEventListener {
             for (int i = 0; i < listOfObstacle.size(); i++) {
                 BoundingVolume bv = listOfObstacle.get(i).getWorldBound();
                 modelCharacter.collideWith(bv, results);
-
-                if (results.size() > 0) {
-                    //System.out.println("COLLIDE!!!!");
+                if (results.size() > 20) {
                     //collision
                     abstractAppState.setEnabled(false);
                     System.out.println(abstractAppState.isEnabled());
                     //end of collision
-                } else {
-                    //System.out.println("NOT COLLIDING");
                 }
             }
+            gameSpeed+=0.001;
         } else {
             model.removeControl(control);
             control.clearChannels();
@@ -322,9 +324,6 @@ public class Main extends SimpleApplication implements AnimEventListener {
         channel2 = control.createChannel();
         channel.setAnim("RunBase");
         channel2.setAnim("RunTop");
-        modelCharacter.addControl(new RigidBodyControl(0f));
-        modelCharacter.getControl(RigidBodyControl.class).getCollisionShape().setScale(new Vector3f(2, 2, 2));
-        bulletAppState.getPhysicsSpace().add(modelCharacter);
         rootNode.attachChild(modelCharacter);
     }
 
