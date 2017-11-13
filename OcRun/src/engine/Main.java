@@ -80,7 +80,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
         Main app = new Main();
         AppSettings settings = new AppSettings(true);
         settings.setResolution(1024, 768);
-        settings.setFrameRate(350);
+        settings.setFrameRate(100);
 //        settings.setFullscreen(true);
         app.setSettings(settings);
         app.setShowSettings(false);
@@ -159,7 +159,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
 
         //animation parameters
         float animTime = 2;
-        int fps = 60;
+        int fps = 100;
         float totalXLength = 10;
 
         //calculating frames
@@ -249,7 +249,8 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 channel.setLoopMode(LoopMode.DontLoop);
             }
             if (jumpTrigger && jumpStatus) {
-                float move = (3.05f - nowGravity) * tpf;
+                float move = gravity * 1.0048f - nowGravity * tpf * 2.553f;
+                System.out.println(tpf);
                 if (move > 0) {
                     jump(move);
                     nowGravity += gravity;
