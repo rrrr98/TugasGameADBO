@@ -10,10 +10,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.bounding.BoundingVolume;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -116,7 +113,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
         processor.addFilter(filter);
         viewPort.addProcessor(processor);
         //end shadow
-
+        
         //disable movement mouse
         flyCam.setEnabled(false);
         // Create model
@@ -139,7 +136,6 @@ public class Main extends SimpleApplication implements AnimEventListener {
             Node left = new Node("left");
             Node right = new Node("right");
             Node obs = new Node("obs");
-
             childModel.setLocalTranslation(2 * i, 0, 0);
             left.setLocalTranslation(2 * i, 0, -2);
             right.setLocalTranslation(2 * i, 0, 2);
@@ -153,7 +149,6 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 model.attachChild(obs);
                 listOfObstacle.add(obsG);
             }
-
             model.attachChild(childModel);
             model.attachChild(left);
             model.attachChild(right);
@@ -254,7 +249,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
             }
             if (jumpTrigger && jumpStatus) {
 //                float move = gravity * 1.0048f - nowGravity * tpf * 2.553f;
-                float move = (0.507f-nowGravity)*0.015f*6;
+                float move = (0.507f-nowGravity)* 0.015f * 6f;
                 System.out.println(tpf);
                 if (move > 0) {
                     jump(move);
@@ -266,7 +261,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
                 }
                 System.out.println("masuk jump");
             } else if (jumpTrigger && !jumpStatus) {
-                float move = (nowGravity) * 0.015f*6f;
+                float move = (nowGravity) * 0.015f * 6f;
                 System.out.println(tpf);
                 if (verticalPosition - move >= 0) {
                     jump(-move);
@@ -295,7 +290,7 @@ public class Main extends SimpleApplication implements AnimEventListener {
                     //end of collision
                 }
             }
-            gameSpeed+=0.001;
+            gameSpeed+=0.0005;
         } else {
             model.removeControl(control);
             control.clearChannels();
