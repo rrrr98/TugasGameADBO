@@ -7,7 +7,7 @@ package controller;
 
 /**
  *
- * @author Zero
+ * @author Hartanto
  */
 public class CharacterController {
     
