@@ -5,12 +5,13 @@
  */
 package model;
 
+import com.jme3.scene.Node;
+
 /**
  *
  * @author Hartanto
  */
-public class World {
-
+public class World extends Node{
     private static World instance;
     private Obstacles obstacles;
     private Terrain terrain;

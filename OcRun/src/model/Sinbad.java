@@ -17,10 +17,10 @@ public class Sinbad extends Character {
     public static Sinbad instance;
 
     private Sinbad() {
-        this.character = (Node) manager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
-        this.character.setLocalScale(0.1f);
-        character.setLocalTranslation(cam.getLocation().add(-2f, -1f, 0));
-        character.getLocalRotation().fromAngleAxis(-1.5708f, Vector3f.UNIT_Y);
+        this.model = (Node) manager.loadModel("Models/Sinbad/Sinbad.mesh.xml");
+        this.model.setLocalScale(0.1f);
+        model.setLocalTranslation(cam.getLocation().add(-2f, -1f, 0));
+        model.getLocalRotation().fromAngleAxis(-1.5708f, Vector3f.UNIT_Y);
     }
 
     public static Sinbad getInstance() {

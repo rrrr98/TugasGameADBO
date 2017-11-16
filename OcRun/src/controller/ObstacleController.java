@@ -5,6 +5,7 @@
  */
 package controller;
 
+import com.jme3.scene.Node;
 import java.util.Iterator;
 import model.Obstacle;
 import model.Obstacles;
@@ -17,24 +18,40 @@ public class ObstacleController {
 
     private Obstacles obstacles;
     private static ObstacleController instance;
-
+    private float randomNumber;
+    private boolean mark;
     private ObstacleController() {
         obstacles = Obstacles.getInstance();
     }
 
-    public ObstacleController getInstance() {
+    public static ObstacleController getInstance() {
         if (instance == null) {
             instance = new ObstacleController();
         }
         return instance;
     }
-
-    public void insertToWorld() {
+    public void attachTo(Node node){
         Iterator<Obstacle> it = obstacles.getListObstacles().iterator();
-        int i = 3;
         while (it.hasNext()) {
-            it.next().getObstacle().setLocalTranslation(2 * i, 1.15f, 0);
-            i += 5;
+            node.attachChild(it.next().getObstacle());
         }
+    }
+    public void update(float tpf){
+        if(CharacterController.getInstance().isMark())
+        if (mark) {
+                randomNumber += tpf;
+            } else {
+                randomNumber -= tpf;
+            }
+            for (int i = 0; i < obstacles.getListObstacles().size(); i++) {
+                obstacles.getListObstacles().get(i).getObstacle().setLocalTranslation(i*10, 1.15f, randomNumber);
+//                System.out.println(randomNumber);
+            }
+            if (randomNumber > 1.8) {
+                mark = false;
+            }
+            if (randomNumber < -1.8) {
+                mark = true;
+            }
     }
 }

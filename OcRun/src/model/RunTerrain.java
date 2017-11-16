@@ -16,15 +16,20 @@ import static model.Model.manager;
  * @author Hartanto
  */
 public class RunTerrain extends Terrain {
-
+    private final int LONG_ROUTE = 10;
     private static RunTerrain instance;
     private Node[][] terrain;
 
     private RunTerrain() {
-        terrain = new Node[11][3];
+        terrain = new Node[LONG_ROUTE+1][3];
         generate();
     }
 
+    @Override
+    public int getLongRoute() {
+        return LONG_ROUTE;
+    }
+    
     public static RunTerrain getIntance() {
         if (instance == null) {
             instance = new RunTerrain();
@@ -58,11 +63,12 @@ public class RunTerrain extends Terrain {
         }
     }
 
-    public Node[][] getTerrain() {
+    @Override
+    public Node[][] getPath() {
         return terrain;
     }
 
-    public void setTerrain(Node[][] terrain) {
+    public void setPath(Node[][] terrain) {
         this.terrain = terrain;
     }
 

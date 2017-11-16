@@ -5,13 +5,16 @@
  */
 package model;
 
+import com.jme3.scene.Node;
+
 /**
  *
  * @author Hartanto
  */
 public abstract class Terrain extends Model {
 
-    protected void generate() {
-    }
-;
+    protected abstract void generate();
+    public abstract Node[][] getPath();
+    public abstract void setPath(Node[][] path);
+    public abstract int getLongRoute();
 }

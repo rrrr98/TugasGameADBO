@@ -15,9 +15,13 @@ import com.jme3.scene.Spatial;
  */
 public abstract class Character extends Model {
 
-    protected Spatial character;
+    protected Spatial model;
     protected static Camera cam;
 
+    public Spatial getModel() {
+        return model;
+    }
+    
     public static final void init(AssetManager manager, Camera cam) {
         setManager(manager);
         setCam(cam);

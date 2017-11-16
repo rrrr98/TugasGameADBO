@@ -5,8 +5,13 @@
  */
 package controller;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
+import com.jme3.animation.Animation;
+import com.jme3.animation.SpatialTrack;
 import com.jme3.scene.Node;
-import model.RunTerrain;
+import java.util.HashMap;
+import model.World;
 
 /**
  *
@@ -14,13 +19,16 @@ import model.RunTerrain;
  */
 public class WorldController {
 
+    private Animation spatialAnimation;
+    private AnimControl control;
+    private static SpatialTrack spatialTrack;
     public final Node world;
-    public final RunTerrain terrain;
+    private AnimChannel channel;
     private static WorldController instance;
-
     private WorldController() {
-        world = new Node("Terrain");
-        terrain = RunTerrain.getIntance();
+        world = World.getInstance();
+        generateWorld();
+        createAnimation();
     }
 
     public static WorldController getInstance() {
@@ -29,13 +37,35 @@ public class WorldController {
         }
         return instance;
     }
-
-    private void generateWorld() {
-        Node[][] terrain = this.terrain.getTerrain();
-        for (int i = 0; i < terrain.length; i++) {
-            terrain[i][1].setLocalTranslation(2 * i, 0, 0);
-            terrain[i][0].setLocalTranslation(2 * i, 0, -2);
-            terrain[i][2].setLocalTranslation(2 * i, 0, 2);
-        }
+    
+    public static void init(SpatialTrack track){
+        spatialTrack = track;
     }
+    private void generateWorld() {
+        TerrainController.getInstance().attachTo(world);
+        ObstacleController.getInstance().attachTo(world);
+    }
+    public void update(float tpf){
+        ObstacleController.getInstance().update(tpf);
+    }
+    public Node getWorld() {
+        return world;
+    }
+    public void createAnimation(){
+        spatialAnimation = new Animation("anim", GameStateController.ANIM_TIME);
+        spatialAnimation.setTracks(new SpatialTrack[]{spatialTrack});
+        
+        control = new AnimControl();
+        HashMap <String, Animation> animations = new HashMap<String, Animation>();
+        animations.put("anim", spatialAnimation);
+        control.setAnimations(animations);
+        world.addControl(control);
+        channel = control.createChannel();
+        channel.setAnim("anim");
+        spatialAnimation.addTrack(spatialTrack);
+    }
+    public void removeTrack(){
+        channel.reset(true);
+    }
+    
 }
