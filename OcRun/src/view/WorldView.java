@@ -9,6 +9,6 @@ package view;
  *
  * @author Zero
  */
-public class TerrainView {
+public class WorldView {
     
 }
