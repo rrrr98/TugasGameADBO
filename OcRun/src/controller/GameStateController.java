@@ -24,6 +24,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
+import view.OverlayGUI;
 
 /**
  *
@@ -45,9 +46,11 @@ public class GameStateController extends AbstractAppState {
     private WorldController worldCtrl;
     private static GameStateController instance;
     private Camera cam;
+    
+    private float score;
 
     private GameStateController() {
-
+        this.score = 0;
     }
 
     public static GameStateController getInstance() {
@@ -72,7 +75,7 @@ public class GameStateController extends AbstractAppState {
         this.physics = this.stateManager.getState(BulletAppState.class);
         System.out.println(rootNode.toString());
         characterCtrl.attatchTo(rootNode);
-        
+
 //        DirectionalLight dl = new DirectionalLight(new Vector3f(10f, 2f, 10f));
 //        rootNode.addLight(dl);
         rootNode.addLight(new AmbientLight());
@@ -115,9 +118,13 @@ public class GameStateController extends AbstractAppState {
 
     @Override
     public void update(float tpf) {
-        super.update(tpf);
-        characterCtrl.update(tpf);
-        worldCtrl.update(tpf);
+        if (StateController.getInstance().getState() == State.GAME_STATE) {
+            super.update(tpf);
+            characterCtrl.update(tpf);
+            worldCtrl.update(tpf);
+            score += tpf * 2;
+            OverlayGUI.getInstance().setHudText(String.format("%.0f", score));
+        }
     }
 
     private void createInput() {
@@ -125,10 +132,10 @@ public class GameStateController extends AbstractAppState {
         inputManager.addMapping("MoveRight", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("MoveLeft", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("JumpStart", new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addMapping("Restart", new KeyTrigger(KeyInput.KEY_0));
+        inputManager.addMapping("Resume", new KeyTrigger(KeyInput.KEY_TAB));
         inputManager.addListener(actionListener, "JumpStart");
         inputManager.addListener(actionListener, "MoveLeft");
         inputManager.addListener(actionListener, "MoveRight");
-        inputManager.addListener(actionListener, "Restart");
+        inputManager.addListener(actionListener, "Resume");
     }
 }

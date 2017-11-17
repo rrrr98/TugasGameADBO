@@ -90,27 +90,15 @@ public class CharacterController implements AnimEventListener {
                         left = true;
                     }
                 }
-                if (name.equals("Restart") && !keyPressed) {
-                    if (!mark) {
-                        mark = true;
-                        character.getModel().addControl(control);
-                        WorldController.getInstance().createAnimation();
-                        channel1 = control.createChannel();
-                        channel2 = control.createChannel();
-                        channel1.setAnim("RunBase");
-                        channel2.setAnim("RunTop");
-                        if (jumpTrigger) {
-                            now = 0;
-                            jumpTrigger = false;
-                            character.getModel().move(0, -verticalPosition, 0);
-                            verticalPosition = 0;
-                            jumpStatus = false;
-                            jump = false;
-                            jumpButtonStatus=false;
-                        }
+
+                if (name.equals("Resume") && !keyPressed) {
+                    System.out.println("masuk resume");
+                    if (StateController.getInstance().getState() == State.GAME_STATE) {
+                        StateController.getInstance().setState(State.PAUSE_STATE);
+                    } else if (StateController.getInstance().getState() == State.PAUSE_STATE) {
+                        StateController.getInstance().setState(State.GAME_STATE);
                     }
                 }
-
             }
         };
     }
@@ -120,94 +108,105 @@ public class CharacterController implements AnimEventListener {
     }
 
     public void update(float tpf) {
-        if (mark) {
-            if (left && !right) {
-                float move = 2 * 0.015f;
-                if (now + move < MAX_MOVE) {
-                    character.getModel().move(0, 0, move);
-                    now += move;
-                    gridPlacement -= move;
-                    System.out.println(gridPlacement);
-                } else {
-                    left = false;
-                    now = 0;
-                }
-            } else if (right && !left) {
-                float move = 2 * 0.015f;
-                if (now + move <= MAX_MOVE) {
-                    character.getModel().move(0, 0, -move);
-                    now += move;
-                    gridPlacement += move;
-                    System.out.println(gridPlacement);
-                } else {
-                    right = false;
-                    now = 0;
-                }
-            } else if (jump) {
-                jumpStatus = true;
-                jumpTrigger = true;
-                jump = false;
-                jumpButtonStatus = true;
-                channel1.setAnim("JumpStart");
-                channel1.setLoopMode(LoopMode.DontLoop);
-            }
-            if (jumpTrigger && jumpStatus && verticalPosition >= 0) {
-//                float move = GRAVITY * 1.0048f - nowSpeed * tpf * 2.553f;
-                float move = (0.5475f - nowSpeed) * 0.015f * 6f;
-//                System.out.println(tpf);
-                if (move > 0) {
-                    jump(move);
-                    nowSpeed += GRAVITY;
-                    verticalPosition += move;
-                    if (verticalPosition < 0) {
-                        verticalPosition = 0;
-                    }
-                } else {
-                    jumpStatus = false;
-                    nowSpeed = GRAVITY;
-                }
-                System.out.println("masuk jump");
-            } else if (jumpTrigger && !jumpStatus) {
-                float move = (nowSpeed) * 0.015f * 6f;
-                System.out.println(tpf);
-                if (verticalPosition > 0) {
-                    jump(-move);
-                    nowSpeed += GRAVITY;
-                    if (verticalPosition - move < 0) {
-                        verticalPosition = 0;
-                    } else {
-                        verticalPosition -= move;
-                    }
-                } else {
-                    channel1.setAnim("RunBase");
-                    channel2.setAnim("RunTop");
-                    channel1.setLoopMode(LoopMode.Loop);
-                    jumpTrigger = false;
-                    jumpButtonStatus = false;
-                    nowSpeed = GRAVITY;
-                    verticalPosition = 0;
-                }
+//        if (mark) {
+        if (left && !right) {
+            float move = 2 * 0.015f;
+            if (now + move < MAX_MOVE) {
+                character.getModel().move(0, 0, move);
+                now += move;
+                gridPlacement -= move;
+                System.out.println(gridPlacement);
+            } else {
                 left = false;
-                right = false;
+                now = 0;
             }
+        } else if (right && !left) {
+            float move = 2 * 0.015f;
+            if (now + move <= MAX_MOVE) {
+                character.getModel().move(0, 0, -move);
+                now += move;
+                gridPlacement += move;
+                System.out.println(gridPlacement);
+            } else {
+                right = false;
+                now = 0;
+            }
+        } else if (jump) {
+            jumpStatus = true;
+            jumpTrigger = true;
+            jump = false;
+            jumpButtonStatus = true;
+            channel1.setAnim("JumpStart");
+            channel1.setLoopMode(LoopMode.DontLoop);
+        }
+        if (jumpTrigger && jumpStatus && verticalPosition >= 0) {
+//                float move = GRAVITY * 1.0048f - nowSpeed * tpf * 2.553f;
+            jumpLogic();
+            System.out.println("masuk jump");
+        } else if (jumpTrigger && !jumpStatus) {
+            dropLogic();
+        }
 
-            // collision
-            CollisionResults results = new CollisionResults();
-            for (int i = 0; i < listOfObstacle.size(); i++) {
-                BoundingVolume bv = listOfObstacle.get(i).getObstacle().getWorldBound();
-                character.getModel().collideWith(bv, results);
-                if (results.size() > 40) {
-                    //collision
-                    mark = false;
-                    System.out.println(appState.isEnabled());
-                    //end of collision
-                }
+        // collision
+        collisionCheck();
+//        } else {
+//            character.getModel().removeControl(control);
+//            control.clearChannels();
+//            //System.out.println("die");
+//            WorldController.getInstance().removeTrack();
+//        }
+    }
+
+    private void collisionCheck() {
+        CollisionResults results = new CollisionResults();
+        for (int i = 0; i < listOfObstacle.size(); i++) {
+            BoundingVolume bv = listOfObstacle.get(i).getObstacle().getWorldBound();
+            character.getModel().collideWith(bv, results);
+            if (results.size() > 40) {
+                //collision
+//                mark = false;
+                StateController.getInstance().setState(State.DIE_STATE);
+                //end of collision
+            }
+        }
+    }
+
+    private void dropLogic() {
+        float move = (nowSpeed) * 0.015f * 6f;
+        if (verticalPosition > 0) {
+            verticalMovement(-move);
+            nowSpeed += GRAVITY;
+            if (verticalPosition - move < 0) {
+                verticalPosition = 0;
+            } else {
+                verticalPosition -= move;
             }
         } else {
-            character.getModel().removeControl(control);
-            control.clearChannels();
-            //System.out.println("die");
-            WorldController.getInstance().removeTrack();
+            channel1.setAnim("RunBase");
+            channel2.setAnim("RunTop");
+            channel1.setLoopMode(LoopMode.Loop);
+            jumpTrigger = false;
+            jumpButtonStatus = false;
+            nowSpeed = GRAVITY;
+            verticalPosition = 0;
+        }
+        left = false;
+        right = false;
+    }
+
+    private void jumpLogic() {
+        float move = (0.5475f - nowSpeed) * 0.015f * 6f;
+//                System.out.println(tpf);
+        if (move > 0) {
+            verticalMovement(move);
+            nowSpeed += GRAVITY;
+            verticalPosition += move;
+            if (verticalPosition < 0) {
+                verticalPosition = 0;
+            }
+        } else {
+            jumpStatus = false;
+            nowSpeed = GRAVITY;
         }
     }
 
@@ -215,7 +214,7 @@ public class CharacterController implements AnimEventListener {
         return mark;
     }
 
-    private void jump(float tpf) {
+    private void verticalMovement(float tpf) {
         //cara naif
         character.getModel().move(0, tpf, 0);
         channel1.setAnim("JumpLoop");

@@ -20,6 +20,7 @@ public class ObstacleController {
     private static ObstacleController instance;
     private float randomNumber;
     private boolean mark;
+
     private ObstacleController() {
         obstacles = Obstacles.getInstance();
     }
@@ -30,28 +31,29 @@ public class ObstacleController {
         }
         return instance;
     }
-    public void attachTo(Node node){
+
+    public void attachTo(Node node) {
         Iterator<Obstacle> it = obstacles.getListObstacles().iterator();
         while (it.hasNext()) {
             node.attachChild(it.next().getObstacle());
         }
     }
-    public void update(float tpf){
-        if(CharacterController.getInstance().isMark())
+
+    public void update(float tpf) {
         if (mark) {
-                randomNumber += tpf;
-            } else {
-                randomNumber -= tpf;
-            }
-            for (int i = 0; i < obstacles.getListObstacles().size(); i++) {
-                obstacles.getListObstacles().get(i).getObstacle().setLocalTranslation(i*10, 1.15f, randomNumber);
+            randomNumber += tpf;
+        } else {
+            randomNumber -= tpf;
+        }
+        for (int i = 0; i < obstacles.getListObstacles().size(); i++) {
+            obstacles.getListObstacles().get(i).getObstacle().setLocalTranslation(i * 10, 1.15f, randomNumber);
 //                System.out.println(randomNumber);
-            }
-            if (randomNumber > 1.8) {
-                mark = false;
-            }
-            if (randomNumber < -1.8) {
-                mark = true;
-            }
+        }
+        if (randomNumber > 1.8) {
+            mark = false;
+        }
+        if (randomNumber < -1.8) {
+            mark = true;
+        }
     }
 }
