@@ -25,15 +25,11 @@ public class ScoreBoard{
     private BufferedWriter writer;
     private BufferedReader reader;
 
-    public ScoreBoard() {
-        this.highscore="0";
-    }
-
     public boolean isStatus() {
         return status;
     }
 
-    public double getScore() {
+    public int getScore() {
         return score;
     }
     
@@ -43,9 +39,7 @@ public class ScoreBoard{
         this.score=0;
         try {
             reader = new BufferedReader(new FileReader("highScore.txt"));
-            if(reader.readLine()!=null){
-                this.highscore = reader.readLine();
-            }
+            this.highscore = reader.readLine();
         } 
         catch (FileNotFoundException ex) {
             ex.getMessage();
@@ -58,19 +52,20 @@ public class ScoreBoard{
         stop=System.currentTimeMillis();
         if((stop-start)%100==0){
             this.score += 1;
+        int temp = Integer.parseInt(this.highscore);
+        if(temp< this.score){
+            this.highscore = this.score+"";
+            try {
+            writer = new BufferedWriter(new FileWriter("highScore.txt"));
+            writer.write(highscore);
+            writer.flush();
+            writer.close();
+            } 
+            catch (IOException ex) {
+                ex.getMessage();
+            }
         }
-//        if(Integer.parseInt(highscore)< score){
-//            highscore = score+"";
-//            try {
-//            writer = new BufferedWriter(new FileWriter("highScore.txt"));
-//            writer.write(highscore);
-//            writer.flush();
-//            writer.close();
-//            } 
-//            catch (IOException ex) {
-//                ex.getMessage();
-//            }
-//        }
+        }
             
     }  
 }
