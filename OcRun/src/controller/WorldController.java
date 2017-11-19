@@ -77,7 +77,9 @@ public class WorldController {
         channel.setSpeed(0);
         spatialAnimation.removeTrack(spatialTrack);
     }
-
+    public void resetTrack() {
+        createAnimation();
+    }
     public void resumeTrack() {
         spatialAnimation.addTrack(spatialTrack);
         channel.setSpeed(1);

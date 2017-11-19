@@ -23,7 +23,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
-import view.OverlayGUI;
+import view.ScoreBoard;
 
 /**
  *
@@ -45,11 +45,9 @@ public class GameStateController extends AbstractAppState {
     private WorldController worldCtrl;
     private static GameStateController instance;
     private Camera cam;
-    
-    private float score;
 
     private GameStateController() {
-        this.score = 0;
+        
     }
 
     public static GameStateController getInstance() {
@@ -123,8 +121,9 @@ public class GameStateController extends AbstractAppState {
             super.update(tpf);
             characterCtrl.update(tpf);
             worldCtrl.update(tpf);
-            score += tpf * 2;
-            OverlayGUI.getInstance().setHudText(String.format("%.0f", score));
+            if (ScoreBoard.getInstance().isStatus()) {
+                ScoreBoard.getInstance().update(tpf);
+            }
         }
     }
 

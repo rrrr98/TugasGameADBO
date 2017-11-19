@@ -12,6 +12,7 @@ import com.jme3.scene.Node;
 import com.jme3.ui.Picture;
 import engine.Tester;
 import model.Character;
+import view.MyStartScreen;
 
 enum State {
     GAME_STATE,
@@ -38,7 +39,7 @@ public class StateController {
     private StateController() {
         this.character = CharacterController.getInstance().getCharacter();
         this.control = CharacterController.getInstance().getControl();
-        this.state = State.GAME_STATE;
+        this.state = State.PAUSE_STATE;
         this.before = State.GAME_STATE;
         this.assetManager = GameStateController.getInstance().getApp().getAssetManager();
         this.rootNode = GameStateController.getInstance().getApp().getRootNode();
@@ -64,7 +65,14 @@ public class StateController {
         character.getModel().removeControl(control);
         WorldController.getInstance().removeTrack();
     }
-
+    public void restart() {
+        removeMovement();
+        WorldController.getInstance().resetTrack();
+        addMovement();
+        setState(State.GAME_STATE);
+        this.before = State.GAME_STATE;
+    }
+    
     private void addMovement() {
         character.getModel().addControl(control);
         WorldController.getInstance().resumeTrack();
@@ -100,6 +108,7 @@ public class StateController {
                 before = State.DIE_STATE;
                 System.out.println("DIE DIE DIE");
                 // view GUI
+                MyStartScreen.getInstance().toExit();
                 break;
         }
     }

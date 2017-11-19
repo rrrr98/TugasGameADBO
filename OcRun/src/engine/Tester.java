@@ -6,20 +6,23 @@
 package engine;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.font.BitmapText;
-import com.jme3.math.ColorRGBA;
+import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.system.AppSettings;
 import controller.GameStateController;
 import controller.StateController;
-import view.OverlayGUI;
+import de.lessvoid.nifty.Nifty;
+import view.InitScreen;
+import view.ScoreBoard;
 
 /**
  *
- * @author i16036
+ * @author Ketua : Kevin R
  */
 public class Tester extends SimpleApplication {
 
     public static final int SCREEN_WIDTH = 1024, SCREEN_HEIGHT = 768;
+    private Nifty nifty;
+
     public static void main(String[] args) {
         Tester app = new Tester();
         AppSettings settings = new AppSettings(true);
@@ -37,6 +40,17 @@ public class Tester extends SimpleApplication {
         flyCam.setEnabled(false);
         GameStateController.getInstance().initialize(stateManager, this);
         StateController.getInstance();
-        OverlayGUI.getInstance().init(guiFont, guiNode);
+        InitScreen initS;
+        ScoreBoard.getInstance().init(guiNode, guiFont);
+        NiftyJmeDisplay niftyDisplay = NiftyJmeDisplay.newNiftyJmeDisplay(
+                assetManager, inputManager, audioRenderer, guiViewPort);
+        nifty = niftyDisplay.getNifty();
+
+        guiViewPort.addProcessor(niftyDisplay);
+        flyCam.setDragToRotate(true);
+        initS = new InitScreen(nifty);
+        initS.initScreen();
+        nifty.gotoScreen("start");
+        ScoreBoard.getInstance().loadScoreBoard();
     }
 }

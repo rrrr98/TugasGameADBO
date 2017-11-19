@@ -24,7 +24,7 @@ import model.Sinbad;
 
 /**
  *
- * @author Hartanto
+ * @author Ketua : Kevin R
  */
 public class CharacterController implements AnimEventListener {
 
@@ -43,6 +43,9 @@ public class CharacterController implements AnimEventListener {
     private Application app;
     private AbstractAppState appState;
 
+    /**
+     * constructor
+     */
     private CharacterController() {
         appState = GameStateController.getInstance();
         app = GameStateController.getInstance().getApp();
@@ -60,6 +63,10 @@ public class CharacterController implements AnimEventListener {
         setUpListener();
     }
 
+    /**
+     * getter instance
+     * @return instance
+     */
     public static CharacterController getInstance() {
         if (instance == null) {
             instance = new CharacterController();
@@ -67,6 +74,9 @@ public class CharacterController implements AnimEventListener {
         return instance;
     }
 
+    /**
+     * set up listener
+     */
     private void setUpListener() {
         actionListener = new ActionListener() {
             public void onAction(String name, boolean keyPressed, float tpf) {
@@ -100,10 +110,18 @@ public class CharacterController implements AnimEventListener {
         };
     }
 
+    /**
+     * attach to node
+     * @param node 
+     */
     public void attatchTo(Node node) {
         node.attachChild(this.character.getModel());
     }
 
+    /**
+     * update method
+     * @param tpf 
+     */
     public void update(float tpf) {
 //        if (mark) {
         if (left && !right) {
@@ -137,7 +155,6 @@ public class CharacterController implements AnimEventListener {
             channel1.setLoopMode(LoopMode.DontLoop);
         }
         if (jumpTrigger && jumpStatus && verticalPosition >= 0) {
-//                float move = GRAVITY * 1.0048f - nowSpeed * tpf * 2.553f;
             jumpLogic();
             System.out.println("masuk jump");
         } else if (jumpTrigger && !jumpStatus) {
@@ -146,12 +163,6 @@ public class CharacterController implements AnimEventListener {
 
         // collision
         collisionCheck();
-//        } else {
-//            character.getModel().removeControl(control);
-//            control.clearChannels();
-//            //System.out.println("die");
-//            WorldController.getInstance().removeTrack();
-//        }
     }
 
     private void collisionCheck() {
