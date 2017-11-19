@@ -6,6 +6,10 @@
 package controller;
 
 import com.jme3.scene.Node;
+import java.util.Iterator;
+import model.FixedObstacle;
+import model.Obstacle;
+import model.Obstacles;
 import model.RunTerrain;
 import model.Terrain;
 
@@ -32,6 +36,7 @@ public class TerrainController {
             terrain[i][0].setLocalTranslation(2 * i, 0, -2);
             terrain[i][2].setLocalTranslation(2 * i, 0, 2);
         }
+        
     }
     public void attachTo(Node node){
         Node[][] terrain = this.terrain.getPath();

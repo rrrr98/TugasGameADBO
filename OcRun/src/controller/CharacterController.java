@@ -8,9 +8,7 @@ package controller;
 import com.jme3.animation.AnimChannel;
 import com.jme3.animation.AnimControl;
 import com.jme3.animation.AnimEventListener;
-import com.jme3.animation.Animation;
 import com.jme3.animation.LoopMode;
-import com.jme3.animation.SpatialTrack;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.bounding.BoundingVolume;
@@ -19,7 +17,6 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
-import java.util.HashMap;
 import model.Character;
 import model.Obstacle;
 import model.Obstacles;
@@ -74,7 +71,7 @@ public class CharacterController implements AnimEventListener {
         actionListener = new ActionListener() {
             public void onAction(String name, boolean keyPressed, float tpf) {
                 if (!jumpButtonStatus && name.equals("JumpStart") && !keyPressed) {
-                    System.out.println("masuk jump");
+//                    System.out.println("masuk jump");
                     jump = true;
                 }
                 if (name.equals("MoveRight") && !keyPressed) {

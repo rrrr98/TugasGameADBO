@@ -16,9 +16,8 @@ import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
-import com.jme3.math.ColorRGBA;
+import com.jme3.light.PointLight;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -33,7 +32,7 @@ import view.OverlayGUI;
 public class GameStateController extends AbstractAppState {
 
     public static final int FPS = 60;
-    public static final float ANIM_TIME = 2;
+    public static final float ANIM_TIME = 15;
 
     private SimpleApplication app;
     private Node rootNode;
@@ -76,9 +75,11 @@ public class GameStateController extends AbstractAppState {
         System.out.println(rootNode.toString());
         characterCtrl.attatchTo(rootNode);
 
-//        DirectionalLight dl = new DirectionalLight(new Vector3f(10f, 2f, 10f));
-//        rootNode.addLight(dl);
-        rootNode.addLight(new AmbientLight());
+        PointLight pl = new PointLight(new Vector3f(18.5f, 3f, 0f), 8.5f);
+//        pl.setDirection(new Vector3f(-2f,-3f, -2f).normalizeLocal());
+//        dl.setColor(ColorRGBA.Gray);
+        rootNode.addLight(pl);
+//        rootNode.addLight(new AmbientLight());
         this.setEnabled(true);
         stateManager.attach(new BulletAppState());
         manager.attach(this);
@@ -91,7 +92,7 @@ public class GameStateController extends AbstractAppState {
         //calculating frames
         int totalFrames = (int) (FPS * ANIM_TIME);
         float dT = ANIM_TIME / totalFrames, t = 0;
-        float dX = totalXLength / totalFrames, x = 0;
+        float dX = totalXLength / totalFrames, x = -180;
         float[] times = new float[totalFrames];
         Vector3f[] translations = new Vector3f[totalFrames];
         Quaternion[] rotations = new Quaternion[totalFrames];

@@ -198,7 +198,7 @@ public class CharacterController implements AnimEventListener {
                 character.getModel().collideWith(bv, results);
                 if (results.size() > 40) {
                     //collision
-                    mark = false;
+                    // mark = false;
                     System.out.println(appState.isEnabled());
                     //end of collision
                 }

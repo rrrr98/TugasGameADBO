@@ -14,27 +14,24 @@ import static model.Model.manager;
 
 /**
  *
- * @author Hartanto
+ * @author dsa
  */
-public class BlockObstacle extends Obstacle {
-    public BlockObstacle() {
-        Random r = new Random();
-        z=(float) r.nextDouble()*3.6f-1.8f;
+public class FixedObstacle extends Obstacle {
+
+    public FixedObstacle() {
         x=0;
-        y=1.15f;
-        mark = r.nextBoolean();
+        y=2.3f;
+        z=0;
         Material mat = manager.loadMaterial("Textures/Terrain/BrickWall/BrickWall.j3m");
-        Box box = new Box(0.2f, 0.25f, 1.4f);
+        Box box = new Box(0.2f, 1.4f, 0.4f);
         Geometry obsG = new Geometry("obstacle", box);
         obsG.setMaterial(mat);
         obstacle = new Node("obstacle");
         obstacle.attachChild(obsG);
-        obstacle.setLocalTranslation(x, y, z);
+        obstacle.setLocalTranslation(x,y,z);
     }
-
     @Override
     public boolean isMoveAble() {
-        return true;
+        return false;
     }
-    
 }
