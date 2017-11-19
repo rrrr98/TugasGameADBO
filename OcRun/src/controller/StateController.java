@@ -14,6 +14,10 @@ import engine.Tester;
 import model.Character;
 import view.MyStartScreen;
 
+/**
+ * game state
+ * @author Kevin R
+ */
 enum State {
     GAME_STATE,
     PAUSE_STATE,
@@ -22,10 +26,10 @@ enum State {
 
 /**
  *
- * @author Zero
+ * @author Ketua : Kevin R
  */
 public class StateController {
-
+    // attribute
     private State state;
     private State before;
     private static StateController instance;
@@ -36,6 +40,9 @@ public class StateController {
     private Picture pic;
     private Node rootNode;
 
+    /**
+     * constructor
+     */
     private StateController() {
         this.character = CharacterController.getInstance().getCharacter();
         this.control = CharacterController.getInstance().getControl();
@@ -45,6 +52,10 @@ public class StateController {
         this.rootNode = GameStateController.getInstance().getApp().getRootNode();
     }
 
+    /**
+     * getter instance
+     * @return instance
+     */
     public static StateController getInstance() {
         if (instance == null) {
             instance = new StateController();
@@ -52,19 +63,34 @@ public class StateController {
         return instance;
     }
 
+    /**
+     * setter state
+     * @param state 
+     */
     public void setState(State state) {
         this.state = state;
         updateState();
     }
 
+    /**
+     * getter state
+     * @return state
+     */
     public State getState() {
         return state;
     }
 
+    /**
+     * remove movement from track, character
+     */
     private void removeMovement() {
         character.getModel().removeControl(control);
         WorldController.getInstance().removeTrack();
     }
+    
+    /**
+     * restart movement from track, character
+     */
     public void restart() {
         removeMovement();
         WorldController.getInstance().resetTrack();
@@ -73,11 +99,18 @@ public class StateController {
         this.before = State.GAME_STATE;
     }
     
+    /**
+     * add movement for track, character
+     */
     private void addMovement() {
         character.getModel().addControl(control);
         WorldController.getInstance().resumeTrack();
     }
 
+    /**
+     * view pause gui
+     * @param node 
+     */
     private void viewPauseGUI(Node node) {
         pic = new Picture("HUD Picture");
         pic.setImage(assetManager, "Textures/States/PauseState.png", true);
@@ -87,6 +120,9 @@ public class StateController {
         node.attachChild(pic);
     }
 
+    /**
+     * update state SWITCH state
+     */
     public void updateState() {
         switch (state) {
             case GAME_STATE:

@@ -6,29 +6,35 @@
 package controller;
 
 import com.jme3.scene.Node;
-import java.util.Iterator;
-import model.FixedObstacle;
-import model.Obstacle;
-import model.Obstacles;
 import model.RunTerrain;
 import model.Terrain;
 
 /**
  *
- * @author Jimz
+ * @author Ketua : Kevin R
  */
 public class TerrainController {
     private static TerrainController instance;
     private Terrain terrain;
+    /**
+     * constructor
+     */
     private TerrainController(){
         terrain = RunTerrain.getIntance();
         generate();
     }
+    /**
+     * getter instance
+     * @return instance
+     */
     public static TerrainController getInstance(){
         if(instance == null)
             instance = new TerrainController();
         return instance;
     }
+    /**
+     * generate terrain
+     */
     private void generate(){
         Node[][]terrain = this.terrain.getPath();
         for (int i = 0; i < terrain.length; i++) {
@@ -38,6 +44,10 @@ public class TerrainController {
         }
         
     }
+    /**
+     * attaach to node
+     * @param node 
+     */
     public void attachTo(Node node){
         Node[][] terrain = this.terrain.getPath();
         for (Node[] node1 : terrain){
@@ -46,6 +56,10 @@ public class TerrainController {
             }
         }
     }
+    /**
+     * mendapatkan panjang route
+     * @return terrain length
+     */
     public int getRouteLong(){
         return terrain.getLongRoute();
     }

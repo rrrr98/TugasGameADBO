@@ -10,24 +10,30 @@ import com.jme3.scene.Node;
 import java.util.Iterator;
 import model.Obstacle;
 import model.Obstacles;
-import model.RunTerrain;
 
 /**
  *
- * @author Hartanto
+ * @author Ketua : Kevin R
  */
 public class ObstacleController {
-
+    // attribute
     private Obstacles obstacles;
     private static ObstacleController instance;
     private float randomNumber;
     private boolean mark;
     private static float x = 0;
 
+    /**
+     * constructor
+     */
     private ObstacleController() {
         obstacles = Obstacles.getInstance();
     }
 
+    /**
+     * getter instance
+     * @return instance
+     */
     public static ObstacleController getInstance() {
         if (instance == null) {
             instance = new ObstacleController();
@@ -35,6 +41,10 @@ public class ObstacleController {
         return instance;
     }
 
+    /**
+     * attach to node
+     * @param node 
+     */
     public void attachTo(Node node) {
         Iterator<Obstacle> it = obstacles.getListObstacles().iterator();
         while (it.hasNext()) {
@@ -42,6 +52,10 @@ public class ObstacleController {
         }
     }
 
+    /**
+     * update obstacle controller
+     * @param tpf 
+     */
     public void update(float tpf) {
         Obstacle obs;
         for (int i = 0; i < obstacles.getListObstacles().size(); i++) {
@@ -64,9 +78,7 @@ public class ObstacleController {
                 }
                 obs.getObstacle().setLocalTranslation(v);
                 System.out.println(randomNumber);
-//                RunTerrain.getIntance().getPath()[i][1].setLocalTranslation(0, 1.15f, randomNumber);
             }
-//                System.out.println(randomNumber);
 
         }
     }

@@ -18,6 +18,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.ArrayList;
 import model.Character;
+import model.FireBall;
 import model.Obstacle;
 import model.Obstacles;
 import model.Sinbad;
@@ -34,6 +35,7 @@ public class CharacterController implements AnimEventListener {
     private ArrayList<Obstacle> listOfObstacle;
     private static CharacterController instance;
     private Character character;
+    private Character character1;
     private AnimChannel channel1, channel2;
     private AnimControl control;
     private boolean mark = true;
@@ -50,6 +52,7 @@ public class CharacterController implements AnimEventListener {
         appState = GameStateController.getInstance();
         app = GameStateController.getInstance().getApp();
         character = Sinbad.getInstance();
+        character1 = FireBall.getInstance();
         control = character.getModel().getControl(AnimControl.class);
         control.addListener(this);
         channel1 = control.createChannel();
@@ -57,6 +60,8 @@ public class CharacterController implements AnimEventListener {
         channel1.setAnim("RunBase");
         channel2.setAnim("RunTop");
         character.getModel().setLocalScale(0.1f);
+        character1.getModel().setLocalScale(0.01f);
+        character1.getModel().setLocalTranslation(18.4f, 1.7f, -0.3f);
         character.getModel().setLocalTranslation(app.getCamera().getLocation().add(18.2f, 1.5f, -10));
         character.getModel().getLocalRotation().fromAngleAxis(-1.5708f, Vector3f.UNIT_Y);
         listOfObstacle = Obstacles.getInstance().getListObstacles();
@@ -65,6 +70,7 @@ public class CharacterController implements AnimEventListener {
 
     /**
      * getter instance
+     *
      * @return instance
      */
     public static CharacterController getInstance() {
@@ -84,14 +90,14 @@ public class CharacterController implements AnimEventListener {
 //                    System.out.println("masuk jump");
                     jump = true;
                 }
-                if (name.equals("MoveRight") && !keyPressed) {
+                if (name.equals("MoveRight")) {
                     System.out.println("masuk right");
                     if (gridPlacement < 0.65f) {
                         right = true;
                     }
                 }
 
-                if (name.equals("MoveLeft") && !keyPressed) {
+                if (name.equals("MoveLeft")) {
                     System.out.println("masuk left");
                     if (gridPlacement > -0.65f) {
                         left = true;
@@ -112,22 +118,26 @@ public class CharacterController implements AnimEventListener {
 
     /**
      * attach to node
-     * @param node 
+     *
+     * @param node
      */
     public void attatchTo(Node node) {
         node.attachChild(this.character.getModel());
+        node.attachChild(this.character1.getModel());
     }
 
     /**
      * update method
-     * @param tpf 
+     *
+     * @param tpf
      */
     public void update(float tpf) {
 //        if (mark) {
-        if (left && !right) {
+        if (left) {
             float move = 2 * 0.015f;
             if (now + move < MAX_MOVE) {
                 character.getModel().move(0, 0, move);
+                character1.getModel().move(0, 0, move);
                 now += move;
                 gridPlacement -= move;
                 System.out.println(gridPlacement);
@@ -135,10 +145,11 @@ public class CharacterController implements AnimEventListener {
                 left = false;
                 now = 0;
             }
-        } else if (right && !left) {
+        } else if (right) {
             float move = 2 * 0.015f;
             if (now + move <= MAX_MOVE) {
                 character.getModel().move(0, 0, -move);
+                character1.getModel().move(0, 0, -move);
                 now += move;
                 gridPlacement += move;
                 System.out.println(gridPlacement);

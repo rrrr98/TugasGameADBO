@@ -16,7 +16,6 @@ import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.light.DirectionalLight;
 import com.jme3.light.PointLight;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -27,10 +26,10 @@ import view.ScoreBoard;
 
 /**
  *
- * @author Jimz
+ * @author Ketua : Kevin R
  */
 public class GameStateController extends AbstractAppState {
-
+    // attribute
     public static final int FPS = 60;
     public static final float ANIM_TIME = 15;
 
@@ -46,10 +45,17 @@ public class GameStateController extends AbstractAppState {
     private static GameStateController instance;
     private Camera cam;
 
+    /**
+     * constructor
+     */
     private GameStateController() {
         
     }
 
+    /**
+     * getter instance
+     * @return 
+     */
     public static GameStateController getInstance() {
         if (instance == null) {
             instance = new GameStateController();
@@ -57,6 +63,11 @@ public class GameStateController extends AbstractAppState {
         return instance;
     }
 
+    /**
+     * init
+     * @param manager
+     * @param app 
+     */
     @Override
     public void initialize(AppStateManager manager, Application app) {
         this.app = (SimpleApplication) app;
@@ -74,10 +85,7 @@ public class GameStateController extends AbstractAppState {
         characterCtrl.attatchTo(rootNode);
 
         PointLight pl = new PointLight(new Vector3f(18.5f, 3f, 0f), 8.5f);
-//        pl.setDirection(new Vector3f(-2f,-3f, -2f).normalizeLocal());
-//        dl.setColor(ColorRGBA.Gray);
         rootNode.addLight(pl);
-//        rootNode.addLight(new AmbientLight());
         this.setEnabled(true);
         stateManager.attach(new BulletAppState());
         manager.attach(this);
@@ -111,10 +119,18 @@ public class GameStateController extends AbstractAppState {
         createInput();
     }
 
+    /**
+     * getter app
+     * @return app
+     */
     public SimpleApplication getApp() {
         return app;
     }
 
+    /**
+     * update game state controller
+     * @param tpf 
+     */
     @Override
     public void update(float tpf) {
         if (StateController.getInstance().getState() == State.GAME_STATE) {
@@ -127,6 +143,9 @@ public class GameStateController extends AbstractAppState {
         }
     }
 
+    /**
+     * create input
+     */
     private void createInput() {
         ActionListener actionListener = characterCtrl.getActionListener();
         inputManager.addMapping("MoveRight", new KeyTrigger(KeyInput.KEY_D));
